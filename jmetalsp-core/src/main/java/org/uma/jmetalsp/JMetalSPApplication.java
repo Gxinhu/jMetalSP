@@ -15,10 +15,7 @@ import java.util.List;
  * @param <P> Problem
  * @param <A> Algorithm
  */
-public class JMetalSPApplication<
-        S extends Solution<?>,
-        P extends DynamicProblem<S, ? extends ObservedData<?>>,
-        A extends DynamicAlgorithm<?, ? extends ObservedData<?>>> {
+public class JMetalSPApplication<S extends Solution<?>, P extends DynamicProblem<S, ? extends ObservedData<?>>, A extends DynamicAlgorithm<?, ? extends ObservedData<?>>> {
 
   private List<StreamingDataSource<?>> streamingDataSourceList;
   private List<DataConsumer<?>> algorithmDataConsumerList;
@@ -33,25 +30,26 @@ public class JMetalSPApplication<
     this.streamingRuntime = null;
   }
 
-  public JMetalSPApplication(P problem,A algorithm) {
+  public JMetalSPApplication(P problem, A algorithm) {
     this();
     this.problem = problem;
     this.algorithm = algorithm;
   }
 
-  public JMetalSPApplication<S,P,A> setProblem(P problem) {
+  public JMetalSPApplication<S, P, A> setProblem(P problem) {
     this.problem = problem;
 
     return this;
   }
 
-  public JMetalSPApplication<S,P,A> setAlgorithm(A algorithm) {
+  public JMetalSPApplication<S, P, A> setAlgorithm(A algorithm) {
     this.algorithm = algorithm;
 
     return this;
   }
 
-  public JMetalSPApplication<S,P,A> addStreamingDataSource(StreamingDataSource<?> streamingDataSource,Observer observer) {
+  public JMetalSPApplication<S, P, A> addStreamingDataSource(StreamingDataSource<?> streamingDataSource,
+      Observer observer) {
     if (streamingDataSourceList == null) {
       streamingDataSourceList = new ArrayList<>();
     }
@@ -62,18 +60,18 @@ public class JMetalSPApplication<
     return this;
   }
 
-  public JMetalSPApplication<S,P,A> addAlgorithmDataConsumer(DataConsumer<?> consumer) {
+  public JMetalSPApplication<S, P, A> addAlgorithmDataConsumer(DataConsumer<?> consumer) {
     if (algorithmDataConsumerList == null) {
       algorithmDataConsumerList = new ArrayList<>();
     }
 
-    this.algorithm.getObservable().register((Observer)consumer);
+    this.algorithm.getObservable().register((Observer) consumer);
     algorithmDataConsumerList.add(consumer);
 
     return this;
   }
 
-  public JMetalSPApplication<S,P,A> setStreamingRuntime(StreamingRuntime runtime) {
+  public JMetalSPApplication<S, P, A> setStreamingRuntime(StreamingRuntime runtime) {
     this.streamingRuntime = runtime;
 
     return this;
@@ -82,23 +80,25 @@ public class JMetalSPApplication<
   public void run() throws InterruptedException {
     fieldChecking();
 
+    System.out.println("hello world");
     Thread algorithmThread = new Thread(algorithm);
+    System.out.println("Hello World again");
     List<Thread> consumerThreadList = new ArrayList<Thread>(algorithmDataConsumerList.size());
     for (DataConsumer<?> consumer : algorithmDataConsumerList) {
       Thread thread = new Thread(consumer);
       consumerThreadList.add(thread);
       thread.start();
     }
+    // algorithm.run();
     algorithmThread.start();
 
-    if(streamingDataSourceList!=null && ! streamingDataSourceList.isEmpty()) {
+    if (streamingDataSourceList != null && !streamingDataSourceList.isEmpty()) {
       streamingRuntime.startStreamingDataSources(streamingDataSourceList);
     }
     for (Thread consumerThread : consumerThreadList) {
       consumerThread.join();
     }
 
-    algorithmThread.join();
   }
 
   private void fieldChecking() {

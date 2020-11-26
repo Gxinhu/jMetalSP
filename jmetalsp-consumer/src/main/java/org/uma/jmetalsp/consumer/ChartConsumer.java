@@ -36,22 +36,22 @@ import java.util.List;
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
-public class ChartConsumer<S extends Solution<?>> implements
-        DataConsumer<AlgorithmObservedData> {
+public class ChartConsumer<S extends Solution<?>> implements DataConsumer<AlgorithmObservedData> {
 
-  //private DynamicAlgorithm<?, AlgorithmObservedData> dynamicAlgorithm;
+  // private DynamicAlgorithm<?, AlgorithmObservedData> dynamicAlgorithm;
   private String algorithmName;
-  private ChartContainer chart ;
-  List<PointSolution> lastReceivedFront = null ;
-
-
+  private ChartContainer chart;
+  private String filePath;
+  List<PointSolution> lastReceivedFront = null;
 
   public ChartConsumer() {
     algorithmName = "";
-    this.chart = null ;
+    this.chart = null;
   }
-  public ChartConsumer(String algorithmName) {
-    this.chart = null ;
+
+  public ChartConsumer(String algorithmName, String filePath) {
+    this.filePath = filePath;
+    this.chart = null;
     this.algorithmName = algorithmName;
   }
 
@@ -69,16 +69,16 @@ public class ChartConsumer<S extends Solution<?>> implements
 
   @Override
   public void update(Observable<AlgorithmObservedData> observable, AlgorithmObservedData data) {
-    int numberOfIterations = 0 ;
-    List<PointSolution> solutionList = null ;
-    List<Double> referencePoint = null ;
+    int numberOfIterations = 0;
+    List<PointSolution> solutionList = null;
+    List<Double> referencePoint = null;
     if (data.getData().containsKey("numberOfIterations")) {
-     numberOfIterations =  (int)data.getData().get("numberOfIterations") ;
+      numberOfIterations = (int) data.getData().get("numberOfIterations");
     }
     if (data.getData().containsKey("solutionList")) {
-      solutionList = new ArrayList<>() ;
-      List<ObservedSolution> receivedList =  (List<ObservedSolution>)data.getData().get("solutionList") ;
-      for (int i = 0 ; i< receivedList.size(); i++) {
+      solutionList = new ArrayList<>();
+      List<ObservedSolution> receivedList = (List<ObservedSolution>) data.getData().get("solutionList");
+      for (int i = 0; i < receivedList.size(); i++) {
         solutionList.add(new PointSolution(receivedList.get(i).getPointSolution()));
       }
     }
@@ -90,22 +90,20 @@ public class ChartConsumer<S extends Solution<?>> implements
     // TODO: error handling if parameters are not included
 
     if (chart == null) {
-      this.chart = new ChartContainer(
-          (String)(data.getData().get("algorithmName")),
-          200,
-          (int)(data.getData().get("numberOfObjectives")));
+      this.chart = new ChartContainer((String) (data.getData().get("algorithmName")), 200,
+          (int) (data.getData().get("numberOfObjectives")));
       try {
-        double ini1=0;
-        double ini2=0;
+        double ini1 = 0;
+        double ini2 = 0;
         if (data.getData().containsKey("solutionList") && this.chart.getName().toUpperCase().contains("TSP")) {
           List<ObservedSolution> receivedList = (List<ObservedSolution>) data.getData().get("solutionList");
-          if(receivedList!=null && !receivedList.isEmpty()){
-            ini1= (double)receivedList.get(0).getObjectives().get(0);
-            ini2= (double)receivedList.get(0).getObjectives().get(1);
+          if (receivedList != null && !receivedList.isEmpty()) {
+            ini1 = (double) receivedList.get(0).getObjectives().get(0);
+            ini2 = (double) receivedList.get(0).getObjectives().get(1);
           }
         }
-        this.chart.setFrontChart(0, 1, null,ini1,ini2);
-        this.chart.getFrontChart().getStyler().setLegendPosition(Styler.LegendPosition.InsideNE) ;
+        this.chart.setFrontChart(0, 1, null, ini1, ini2);
+        this.chart.getFrontChart().getStyler().setLegendPosition(Styler.LegendPosition.InsideNE);
       } catch (FileNotFoundException e) {
         e.printStackTrace();
       }
@@ -113,43 +111,42 @@ public class ChartConsumer<S extends Solution<?>> implements
     } else {
       if (solutionList.size() != 0) {
         // double coverageValue = 0;
-        this.chart.getFrontChart().setTitle(algorithmName+" Iteration: " + numberOfIterations);
-        //if (lastReceivedFront == null) {
+        this.chart.getFrontChart().setTitle(algorithmName + " Iteration: " + numberOfIterations);
+        // if (lastReceivedFront == null) {
         lastReceivedFront = solutionList;
         this.chart.updateFrontCharts(solutionList, numberOfIterations);
-        //this.chart.refreshCharts();
-        //} else {
-        //Front referenceFront = new ArrayFront(lastReceivedFront);
+        // this.chart.refreshCharts();
+        // } else {
+        // Front referenceFront = new ArrayFront(lastReceivedFront);
 
-        //InvertedGenerationalDistance<PointSolution> igd =
-        //       new InvertedGenerationalDistance<PointSolution>(referenceFront);
+        // InvertedGenerationalDistance<PointSolution> igd =
+        // new InvertedGenerationalDistance<PointSolution>(referenceFront);
 
-        //coverageValue=igd.evaluate(solutionList);
+        // coverageValue=igd.evaluate(solutionList);
         // }
 
-        //if (coverageValue>0.005) {
-        //this.chart.updateFrontCharts(solutionList, numberOfIterations);
-        //lastReceivedFront=solutionList;
+        // if (coverageValue>0.005) {
+        // this.chart.updateFrontCharts(solutionList, numberOfIterations);
+        // lastReceivedFront=solutionList;
         try {
-          this.chart.saveChart(numberOfIterations +".chart", BitmapEncoder.BitmapFormat.PNG);
+          this.chart.saveChart(filePath + numberOfIterations + ".chart", BitmapEncoder.BitmapFormat.PNG);
         } catch (IOException e) {
           e.printStackTrace();
         }
-        //}
+        // }
         this.chart.refreshCharts();
       }
     }
   }
 
-
   ////////////////////////////////////////////////
   public static void main(String[] args) {
     String topicName = "prueba-solutionlist-topic-from-main";
 
-    ChartConsumer chartConsumer = new ChartConsumer() ;
+    ChartConsumer chartConsumer = new ChartConsumer();
 
-    KafkaBasedConsumer<AlgorithmObservedData> chartKafkaBasedConsumer =
-      new KafkaBasedConsumer<>(topicName, chartConsumer, new AlgorithmObservedData()) ;
+    KafkaBasedConsumer<AlgorithmObservedData> chartKafkaBasedConsumer = new KafkaBasedConsumer<>(topicName,
+        chartConsumer, new AlgorithmObservedData());
 
     chartKafkaBasedConsumer.start();
 
