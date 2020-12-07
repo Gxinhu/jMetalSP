@@ -48,17 +48,6 @@ public class JMetalSPApplication<S extends Solution<?>, P extends DynamicProblem
     return this;
   }
 
-  public JMetalSPApplication<S, P, A> addStreamingDataSource(StreamingDataSource<?> streamingDataSource,
-      Observer observer) {
-    if (streamingDataSourceList == null) {
-      streamingDataSourceList = new ArrayList<>();
-    }
-    streamingDataSource.getObservable().register(observer);
-
-    streamingDataSourceList.add(streamingDataSource);
-
-    return this;
-  }
 
   public JMetalSPApplication<S, P, A> addAlgorithmDataConsumer(DataConsumer<?> consumer) {
     if (algorithmDataConsumerList == null) {
