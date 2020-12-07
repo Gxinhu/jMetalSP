@@ -32,80 +32,80 @@ import java.util.List;
  */
 public class AlgorithmFactory {
 
-  public static DynamicAlgorithm<List<DoubleSolution>, AlgorithmObservedData>
-  getAlgorithm(String algorithmName, DynamicProblem<DoubleSolution, ObservedValue<Integer>> problem) {
-    DynamicAlgorithm<List<DoubleSolution>, AlgorithmObservedData> algorithm;
+    public static DynamicAlgorithm<List<DoubleSolution>, AlgorithmObservedData>
+    getAlgorithm(String algorithmName, DynamicProblem<DoubleSolution, ObservedValue<Integer>> problem) {
+        DynamicAlgorithm<List<DoubleSolution>, AlgorithmObservedData> algorithm;
 
-    CrossoverOperator<DoubleSolution> crossover = new SBXCrossover(0.9, 20.0);
-    MutationOperator<DoubleSolution> mutation =
-            new PolynomialMutation(1.0 / problem.getNumberOfVariables(), 20.0);
-    SelectionOperator<List<DoubleSolution>, DoubleSolution> selection=new BinaryTournamentSelection<DoubleSolution>();
-    InvertedGenerationalDistance<PointSolution> igd =
-            new InvertedGenerationalDistance<>();
-    CoverageFront<PointSolution> coverageFront = new CoverageFront<>(0.005,igd);
+        CrossoverOperator<DoubleSolution> crossover = new SBXCrossover(0.9, 20.0);
+        MutationOperator<DoubleSolution> mutation =
+                new PolynomialMutation(1.0 / problem.getNumberOfVariables(), 20.0);
+        SelectionOperator<List<DoubleSolution>, DoubleSolution> selection = new BinaryTournamentSelection<DoubleSolution>();
+        InvertedGenerationalDistance<PointSolution> igd =
+                new InvertedGenerationalDistance<>();
+        CoverageFront<PointSolution> coverageFront = new CoverageFront<>(0.005, igd);
 
-    switch (algorithmName) {
-      case "NSGAII":
-        coverageFront = new CoverageFront<>(0.05,igd);
-        algorithm = new DynamicNSGAIIBuilder<>(crossover, mutation, new DefaultObservable<>(),coverageFront)
-                .setMaxEvaluations(50000)
-                .setPopulationSize(100)
-                .setAutoUpdate(false)
-                .build(problem);
-        break;
+        switch (algorithmName) {
+            case "NSGAII":
+                coverageFront = new CoverageFront<>(0.05, igd);
+                algorithm = new DynamicNSGAIIBuilder<>(crossover, mutation, new DefaultObservable<>(), coverageFront)
+                        .setMaxEvaluations(50000)
+                        .setPopulationSize(100)
+                        .setAutoUpdate(false)
+                        .build(problem);
+                break;
 
-      case "MOCell":
-        coverageFront = new CoverageFront<>(0.05,igd);
-        algorithm = new DynamicMOCellBuilder<>(crossover, mutation, new DefaultObservable<>(),coverageFront)
-                .setMaxEvaluations(50000)
-                .setPopulationSize(100)
-                .build(problem);
-        break;
-      case "SMPSO":
-        algorithm = new DynamicSMPSOBuilder<>(
-                mutation, new CrowdingDistanceArchive<>(100), new DefaultObservable<>(),coverageFront)
-                .setMaxIterations(500)
-                .setSwarmSize(100)
-                .build(problem);
-        break;
-      case "WASFGA":
-        List<Double> referencePoint = new ArrayList<>();
-        referencePoint.add(0.5);
-        referencePoint.add(0.5);
+            case "MOCell":
+                coverageFront = new CoverageFront<>(0.05, igd);
+                algorithm = new DynamicMOCellBuilder<>(crossover, mutation, new DefaultObservable<>(), coverageFront)
+                        .setMaxEvaluations(50000)
+                        .setPopulationSize(100)
+                        .build(problem);
+                break;
+            case "SMPSO":
+                algorithm = new DynamicSMPSOBuilder<>(
+                        mutation, new CrowdingDistanceArchive<>(100), new DefaultObservable<>(), coverageFront)
+                        .setMaxIterations(500)
+                        .setSwarmSize(100)
+                        .build(problem);
+                break;
+            case "WASFGA":
+                List<Double> referencePoint = new ArrayList<>();
+                referencePoint.add(0.5);
+                referencePoint.add(0.5);
 
-        algorithm = new DynamicWASFGABuilder<>(crossover, mutation, referencePoint,0.005, new DefaultObservable<>(),coverageFront)
-                .setMaxIterations(500)
-                .setPopulationSize(100)
-                .build(problem);
-        break;
+                algorithm = new DynamicWASFGABuilder<>(crossover, mutation, referencePoint, 0.005, new DefaultObservable<>(), coverageFront)
+                        .setMaxIterations(500)
+                        .setPopulationSize(100)
+                        .build(problem);
+                break;
 
 
-      case "NSGAIII":
-        algorithm = (DynamicAlgorithm<List<DoubleSolution>, AlgorithmObservedData>) new DynamicNSGAIIIBuilder<>(problem,new DefaultObservable<>(),coverageFront)
-                .setCrossoverOperator(crossover)
-                .setMutationOperator(mutation)
-                .setSelectionOperator(selection)
-                .setMaxIterations(50000)
-                .build();
+            case "NSGAIII":
+                algorithm = (DynamicAlgorithm<List<DoubleSolution>, AlgorithmObservedData>) new DynamicNSGAIIIBuilder<>(problem, new DefaultObservable<>(), coverageFront)
+                        .setCrossoverOperator(crossover)
+                        .setMutationOperator(mutation)
+                        .setSelectionOperator(selection)
+                        .setMaxIterations(50000)
+                        .build();
 
-        break;
-      case "RNSGAII":
-        coverageFront = new CoverageFront<>(0.15,igd);
-        List<Double> interestPoint = new ArrayList<>();
-        interestPoint.add(0.5);
-        interestPoint.add(0.5);
-        double epsilon = 0.001D;
-        algorithm = (DynamicAlgorithm<List<DoubleSolution>, AlgorithmObservedData>)
-                new DynamicRNSGAIIBuilder<>(crossover, mutation, new DefaultObservable<>(),interestPoint,epsilon,coverageFront)
-                .setMaxEvaluations(50000)
-                .setPopulationSize(100)
-                .build(problem);
+                break;
+            case "RNSGAII":
+                coverageFront = new CoverageFront<>(0.15, igd);
+                List<Double> interestPoint = new ArrayList<>();
+                interestPoint.add(0.5);
+                interestPoint.add(0.5);
+                double epsilon = 0.001D;
+                algorithm = (DynamicAlgorithm<List<DoubleSolution>, AlgorithmObservedData>)
+                        new DynamicRNSGAIIBuilder<>(crossover, mutation, new DefaultObservable<>(), interestPoint, epsilon, coverageFront)
+                                .setMaxEvaluations(50000)
+                                .setPopulationSize(100)
+                                .build(problem);
 
-        break;
-      default:
-        throw new JMetalException("Algorithm " + algorithmName + " does not exist") ;
+                break;
+            default:
+                throw new JMetalException("Algorithm " + algorithmName + " does not exist");
+        }
+
+        return algorithm;
     }
-
-    return algorithm ;
-  }
 }
