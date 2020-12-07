@@ -24,12 +24,9 @@ import org.uma.jmetal.qualityindicator.impl.InvertedGenerationalDistance;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
-import org.uma.jmetal.util.front.Front;
-import org.uma.jmetal.util.front.imp.ArrayFront;
 import org.uma.jmetal.util.point.PointSolution;
 import org.uma.jmetalsp.DynamicAlgorithm;
 import org.uma.jmetalsp.DynamicProblem;
-import org.uma.jmetalsp.DynamicUpdate;
 import org.uma.jmetalsp.observeddata.AlgorithmObservedData;
 import org.uma.jmetalsp.observeddata.ObservedValue;
 import org.uma.jmetalsp.observer.Observable;
@@ -37,6 +34,7 @@ import org.uma.jmetalsp.observer.impl.KafkaBasedConsumer;
 import org.uma.jmetalsp.observer.impl.KafkaObservable;
 import org.uma.jmetalsp.problem.fda.FDA2;
 import org.uma.jmetalsp.qualityindicator.CoverageFront;
+import org.uma.jmetalsp.util.detectstrategy.DetectStrategy;
 import org.uma.jmetalsp.util.restartstrategy.RestartStrategy;
 import org.uma.jmetalsp.util.restartstrategy.impl.CreateNRandomSolutions;
 import org.uma.jmetalsp.util.restartstrategy.impl.RemoveFirstNSolutions;
@@ -63,6 +61,7 @@ public class DynamicNSGAII<S extends Solution<?>> extends NSGAII<S>
     private List<S> lastReceivedFront;
     private boolean autoUpdate;
     private CoverageFront<PointSolution> coverageFront;
+    private DetectStrategy<S> detectstrategy;
 
     public DynamicNSGAII(DynamicProblem<S, ?> problem, int maxEvaluations, int populationSize, int matingPoolSize,
                          int offspringPopulationSize, Comparator<S> dominanceComparator, CrossoverOperator<S> crossoverOperator,
@@ -201,5 +200,10 @@ public class DynamicNSGAII<S extends Solution<?>> extends NSGAII<S>
     @Override
     public void setRestartStrategy(RestartStrategy<?> restartStrategy) {
         this.restartStrategyForProblemChange = (RestartStrategy<S>) restartStrategy;
+    }
+
+    @Override
+    public void setDetectStrategy(DetectStrategy<?> detectStrategy) {
+       this.detectstrategy= (DetectStrategy<S>) detectStrategy;
     }
 }
