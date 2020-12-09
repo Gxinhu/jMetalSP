@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DF1 extends DF implements Serializable {
+public class DF1 extends AbstractDF implements Serializable {
     public DF1(Observable<ObservedValue<Integer>> observable) {
         this(10, 2, observable);
     }

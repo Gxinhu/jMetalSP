@@ -11,11 +11,11 @@ import org.uma.jmetalsp.impl.DefaultRuntime;
 import org.uma.jmetalsp.observeddata.AlgorithmObservedData;
 import org.uma.jmetalsp.observeddata.ObservedValue;
 import org.uma.jmetalsp.problem.fda.FDA2;
+import org.uma.jmetalsp.util.detectstrategy.DetectStrategy;
 import org.uma.jmetalsp.util.restartstrategy.RestartStrategy;
 import org.uma.jmetalsp.util.restartstrategy.impl.CreateNRandomSolutions;
 import org.uma.jmetalsp.util.restartstrategy.impl.RemoveNRandomSolutions;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class DynamicContinuousApplication {
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         // STEP 1. Create the problem
         DynamicProblem<DoubleSolution, ObservedValue<Integer>> problem = new FDA2();
         // STEP 2. Create the algorithm
@@ -47,6 +47,8 @@ public class DynamicContinuousApplication {
                 new RemoveNRandomSolutions<>(15), new CreateNRandomSolutions<DoubleSolution>()));
 
         // STEP 3. Create the streaming data source (only one in this example)
+        //TODO 写出探测策略的实现类
+        algorithm.setDetectStrategy(new DetectStrategy<>(new D));
 
         // STEP 4. Create the data consumers and register into the algorithm
         DataConsumer<AlgorithmObservedData> localDirectoryOutputConsumer = new LocalDirectoryOutputConsumer<DoubleSolution>(

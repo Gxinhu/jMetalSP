@@ -145,7 +145,8 @@ public class DynamicNSGAII<S extends Solution<?>> extends NSGAII<S>
 
             int iteration = evaluations / getPopulation().size();
             ((DynamicProblem) getDynamicProblem()).update(null, new ObservedValue<>(iteration));
-            if (getDynamicProblem().hasTheProblemBeenModified()) {
+            detectstrategy.saveFilterDetector(getPopulation());
+            if (detectstrategy.isChange(getDynamicProblem())) {
                 observable.setChanged();
                 Map<String, Object> algorithmData = new HashMap<>();
                 algorithmData.put("numberOfIterations", completedIterations);

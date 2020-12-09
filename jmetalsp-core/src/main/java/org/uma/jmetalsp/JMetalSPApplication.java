@@ -17,12 +17,13 @@ import java.util.List;
  */
 public class JMetalSPApplication<S extends Solution<?>, P extends DynamicProblem<S, ? extends ObservedData<?>>, A extends DynamicAlgorithm<?, ? extends ObservedData<?>>> {
 
-  private List<StreamingDataSource<?>> streamingDataSourceList;
+  private final List<StreamingDataSource<?>> streamingDataSourceList;
   private List<DataConsumer<?>> algorithmDataConsumerList;
   private StreamingRuntime streamingRuntime;
 
   private P problem;
   private A algorithm;
+
 
   public JMetalSPApplication() {
     this.streamingDataSourceList = null;
@@ -78,7 +79,6 @@ public class JMetalSPApplication<S extends Solution<?>, P extends DynamicProblem
       consumerThreadList.add(thread);
       thread.start();
     }
-    // algorithm.run();
     algorithmThread.start();
 
     if (streamingDataSourceList != null && !streamingDataSourceList.isEmpty()) {

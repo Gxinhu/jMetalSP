@@ -12,7 +12,7 @@ public interface DynamicProblem<S extends Solution<?>, O extends ObservedData<?>
   boolean hasTheProblemBeenModified();
 
   void reset();
-  void setSeverityVChange(int severityVChange);
-  void setStartChangeIteration(int startChangeIteration);
   void setNumberChange(int numberChange);
+  void setStartChangeIteration(int startChangeIteration);
+  void setSeverityChange(int severityChange);
 }
