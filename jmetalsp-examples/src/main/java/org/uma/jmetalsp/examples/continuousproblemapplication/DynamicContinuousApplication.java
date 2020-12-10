@@ -12,6 +12,8 @@ import org.uma.jmetalsp.observeddata.AlgorithmObservedData;
 import org.uma.jmetalsp.observeddata.ObservedValue;
 import org.uma.jmetalsp.problem.fda.FDA2;
 import org.uma.jmetalsp.util.detectstrategy.DetectStrategy;
+import org.uma.jmetalsp.util.detectstrategy.impl.DefaultDetectStrategy;
+import org.uma.jmetalsp.util.detectstrategy.impl.RandomSelectDetectorStrategy;
 import org.uma.jmetalsp.util.restartstrategy.RestartStrategy;
 import org.uma.jmetalsp.util.restartstrategy.impl.CreateNRandomSolutions;
 import org.uma.jmetalsp.util.restartstrategy.impl.RemoveNRandomSolutions;
@@ -20,16 +22,8 @@ import java.util.List;
 
 /**
  * Example of jMetalSP application. Features: - Algorithm: to choose among
- * NSGA-II, SMPSO, MOCell, and WASF-GA - Problem: Any of the FDA familiy -
- * Default streaming runtime (Spark is not used)
- * <p>
- * Steps to compile and run the example: 1. Compile the project: mvn package 2.
- * Run the program: java -cp
- * jmetalsp-examples/target/jmetalsp-examples-2.1-SNAPSHOTar-with-dependencies.jar
- * \
- * org.uma.jmetalsp.examples.continuousproblemapplication.DynamicContinuousApplication
  *
- * @author Antonio J. Nebro <antonio@lcc.uma.es>
+ * @author HUXin
  */
 public class DynamicContinuousApplication {
 
@@ -40,22 +34,17 @@ public class DynamicContinuousApplication {
         DynamicAlgorithm<List<DoubleSolution>, AlgorithmObservedData> algorithm = AlgorithmFactory.getAlgorithm("NSGAII",
                 problem);
 
+        // STEP 3. Create the restart and detect strategy and set into the algorithm
         algorithm.setRestartStrategy(new RestartStrategy<>(
-                // new RemoveFirstNSolutions<>(50),
-                // new RemoveNSolutionsAccordingToTheHypervolumeContribution<>(50),
-                // new RemoveNSolutionsAccordingToTheCrowdingDistance<>(50),
                 new RemoveNRandomSolutions<>(15), new CreateNRandomSolutions<DoubleSolution>()));
-
-        // STEP 3. Create the streaming data source (only one in this example)
-        //TODO 写出探测策略的实现类
-        algorithm.setDetectStrategy(new DetectStrategy<>(new D));
+        algorithm.setDetectStrategy(new DetectStrategy<>(new DefaultDetectStrategy<>(), new RandomSelectDetectorStrategy<DoubleSolution>(0.05)));
 
         // STEP 4. Create the data consumers and register into the algorithm
         DataConsumer<AlgorithmObservedData> localDirectoryOutputConsumer = new LocalDirectoryOutputConsumer<DoubleSolution>(
-                "outputdirectory");
+                "Subdirectory");
 
         DataConsumer<AlgorithmObservedData> chartConsumer = new ChartConsumer<DoubleSolution>(algorithm.getName(),
-                "./outputdirectory/");
+                "./outputting/");
         // STEP 5. Create the application and run
         JMetalSPApplication<DoubleSolution, DynamicProblem<DoubleSolution, ObservedValue<Integer>>, DynamicAlgorithm<List<DoubleSolution>, AlgorithmObservedData>> application;
 

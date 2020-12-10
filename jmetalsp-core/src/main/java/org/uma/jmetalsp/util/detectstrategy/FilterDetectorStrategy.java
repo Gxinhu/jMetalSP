@@ -1,4 +1,4 @@
-package org.uma.jmetalsp.util.detectstrategy.impl;
+package org.uma.jmetalsp.util.detectstrategy;
 
 import org.uma.jmetal.solution.Solution;
 

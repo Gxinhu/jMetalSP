@@ -3,13 +3,12 @@ package org.uma.jmetalsp.util.detectstrategy;
 
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetalsp.DynamicProblem;
-import org.uma.jmetalsp.util.detectstrategy.impl.FilterDetectorStrategy;
 
 import java.util.List;
 
 /**
  * @author HUXin
- * @description
+ * @description Detect strategy
  * @date 2020/12/7
  **/
 public class DetectStrategy<S extends Solution<?>> {
