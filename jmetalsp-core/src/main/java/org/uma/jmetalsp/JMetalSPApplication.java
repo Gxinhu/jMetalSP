@@ -8,14 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * @author Antonio J. Nebro
- *
  * @param <S> Solution (encoding)
  * @param <P> Problem
  * @param <A> Algorithm
+ * @author Antonio J. Nebro
  */
-public class JMetalSPApplication<S extends Solution<?>, P extends DynamicProblem<S, ? extends ObservedData<?>>, A extends DynamicAlgorithm<?, ? extends ObservedData<?>>> {
+public class JMetalSPApplication<S extends Solution<?>, P extends DynamicProblem<S, ? extends ObservedData<?>>, A extends DynamicAlgorithm<?, ? extends ObservedData<?>, S>> {
 
   private List<StreamingDataSource<?>> streamingDataSourceList;
   private List<DataConsumer<?>> algorithmDataConsumerList;
@@ -69,9 +67,7 @@ public class JMetalSPApplication<S extends Solution<?>, P extends DynamicProblem
   public void run() throws InterruptedException {
     fieldChecking();
 
-    System.out.println("hello world");
     Thread algorithmThread = new Thread(algorithm);
-    System.out.println("Hello World again");
     List<Thread> consumerThreadList = new ArrayList<Thread>(algorithmDataConsumerList.size());
     for (DataConsumer<?> consumer : algorithmDataConsumerList) {
       Thread thread = new Thread(consumer);
@@ -84,7 +80,9 @@ public class JMetalSPApplication<S extends Solution<?>, P extends DynamicProblem
     if (streamingDataSourceList != null && !streamingDataSourceList.isEmpty()) {
       streamingRuntime.startStreamingDataSources(streamingDataSourceList);
     }
+    algorithmThread.join();
     for (Thread consumerThread : consumerThreadList) {
+      consumerThread.interrupt();
       consumerThread.join();
     }
 

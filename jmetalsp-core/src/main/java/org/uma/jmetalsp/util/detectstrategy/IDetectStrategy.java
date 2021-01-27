@@ -10,6 +10,6 @@ import java.util.List;
  * @description
  * @date 2020/12/7
  **/
-public interface DetectChangeStrategy<S extends Solution<?>> {
-    boolean detect(List<S> tempPopulation, DynamicProblem<S, ?> problem);
+public interface IDetectStrategy<S extends Solution<?>> {
+  boolean detect(List<S> detector, DynamicProblem<S, ?> problem);
 }

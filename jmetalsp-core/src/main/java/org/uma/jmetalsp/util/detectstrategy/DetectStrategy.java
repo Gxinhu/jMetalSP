@@ -2,7 +2,6 @@ package org.uma.jmetalsp.util.detectstrategy;
 
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetalsp.DynamicProblem;
-import org.uma.jmetalsp.util.detectstrategy.impl.FilterDetector;
 
 import java.util.List;
 
@@ -12,19 +11,17 @@ import java.util.List;
  * @date 2020/12/7
  **/
 public class DetectStrategy<S extends Solution<?>> {
-    private List<S> detector;
-    private final DetectChangeStrategy<S> detectChangeStrategy;
-    private final FilterDetector<S> fliterDetector;
+  private final IDetectStrategy<S> detectStrategy;
+  private final IFilterStrategy<S> filterStrategy;
 
-    public DetectStrategy(DetectChangeStrategy<S> detectChangeStrategy) {
-        this.detectChangeStrategy = detectChangeStrategy;
-    }
+  public DetectStrategy(IDetectStrategy<S> detectChangeStrategy, IFilterStrategy<S> filterDetector) {
+    this.detectStrategy = detectChangeStrategy;
+    this.filterStrategy = filterDetector;
+  }
 
-    public void saveTempPopulaiton(List<S> tempPopulation) {
-        this.detector = tempPopulation;
-    }
 
-    public boolean isChange( DynamicProblem<S, ?> problem) {
-        return detectChangeStrategy.detect(this.detector, problem);
-    }
+  public boolean isChange(DynamicProblem<S, ?> problem, List<S> population) {
+    List<S> detector = filterStrategy.filter(population);
+    return detectStrategy.detect(detector, problem);
+  }
 }

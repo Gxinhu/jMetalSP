@@ -29,12 +29,12 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class SimpleSolutionListConsumer<S extends Solution<?>> implements
-        DataConsumer<ObservedValue<List<ObservedSolution>>> {
+    DataConsumer<ObservedValue<List<ObservedSolution>>> {
 
-  private DynamicAlgorithm<?, ObservedValue<List<ObservedSolution>>> dynamicAlgorithm;
+  private DynamicAlgorithm<?, ObservedValue<List<ObservedSolution>>, S> dynamicAlgorithm;
 
-  public SimpleSolutionListConsumer(DynamicAlgorithm<?, ObservedValue<List<ObservedSolution>>> algorithm) {
-    this.dynamicAlgorithm = algorithm ;
+  public SimpleSolutionListConsumer(DynamicAlgorithm<?, ObservedValue<List<ObservedSolution>>, S> algorithm) {
+    this.dynamicAlgorithm = algorithm;
   }
 
   @Override
@@ -57,6 +57,6 @@ public class SimpleSolutionListConsumer<S extends Solution<?>> implements
   @Override
   public void update(Observable<ObservedValue<List<ObservedSolution>>> observable, ObservedValue<List<ObservedSolution>> data) {
     System.out.println("Size of the list of solutions: " + data.getValue().size());
-    System.out.println("First solution: " + data.getValue().get(0)) ;
+    System.out.println("First solution: " + data.getValue().get(0));
   }
 }
