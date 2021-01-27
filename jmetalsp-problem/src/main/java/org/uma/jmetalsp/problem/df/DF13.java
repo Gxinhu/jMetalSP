@@ -9,7 +9,7 @@ import org.uma.jmetalsp.observeddata.ObservedValue;
 import org.uma.jmetalsp.observer.Observable;
 import org.uma.jmetalsp.observer.impl.DefaultObservable;
 
-public class DF13 extends DF implements Serializable {
+public class DF13 extends AbstractDF implements Serializable {
     public DF13(Observable<ObservedValue<Integer>> observable){
         this(10,3, observable);
     }
