@@ -61,18 +61,4 @@ public abstract class AbstractDF
         time = (1.0d / (double) severityChange) * Math.floor(tauTmp / (double) numberChange);
     }
 
-    @Override
-    public void setNumberChange(int numberChange) {
-        this.numberChange = numberChange;
-    }
-
-    @Override
-    public void setStartChangeIteration(int startChangeIteration) {
-        this.startChangeIteration = startChangeIteration;
-    }
-
-    @Override
-    public void setSeverityChange(int severityChange) {
-        this.severityChange = severityChange;
-    }
 }
