@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LocalDirectoryOutputConsumer<S extends Solution<?>> implements
-        DataConsumer<AlgorithmObservedData> {
+    DataConsumer<AlgorithmObservedData> {
   private String outputDirectoryName;
   private int fileCounter = 0;
 
@@ -33,10 +33,11 @@ public class LocalDirectoryOutputConsumer<S extends Solution<?>> implements
 
   @Override
   public void run() {
-    while (true) {
+    while (!Thread.currentThread().isInterrupted()) {
       try {
         Thread.sleep(1000000);
       } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
         e.printStackTrace();
       }
     }
@@ -59,19 +60,20 @@ public class LocalDirectoryOutputConsumer<S extends Solution<?>> implements
 
   @Override
   public void update(Observable<AlgorithmObservedData> observable, AlgorithmObservedData data) {
-    List<ObservedSolution<?,?>> solutionList = (List<ObservedSolution<?,?>>)data.getData().get("solutionList") ;
+    List<ObservedSolution<?, ?>> solutionList = (List<ObservedSolution<?, ?>>) data.getData().get("solutionList");
+    int numberOfIterations = (int) data.getData().get("numberOfIterations");
 
-    List<DummySolution<?>> dummySolutionList = new ArrayList<>() ;
+    List<DummySolution<?>> dummySolutionList = new ArrayList<>();
 
     for (ObservedSolution solution : solutionList) {
-      dummySolutionList.add(new DummySolution(solution)) ;
+      dummySolutionList.add(new DummySolution(solution));
     }
 
     new SolutionListOutput(dummySolutionList)
-            .setSeparator("\t")
-            .setFunFileOutputContext(new DefaultFileOutputContext(outputDirectoryName + "/FUN" + fileCounter + ".tsv"))
-            .setVarFileOutputContext(new DefaultFileOutputContext(outputDirectoryName + "/VAR" + fileCounter + ".tsv"))
-            .print();
+        .setSeparator("\t")
+        .setFunFileOutputContext(new DefaultFileOutputContext(outputDirectoryName + "/FUN" + numberOfIterations + ".tsv"))
+        .setVarFileOutputContext(new DefaultFileOutputContext(outputDirectoryName + "/VAR" + numberOfIterations + ".tsv"))
+        .print();
     fileCounter++;
   }
 
@@ -79,10 +81,10 @@ public class LocalDirectoryOutputConsumer<S extends Solution<?>> implements
   public static void main(String[] args) {
     String topicName = "prueba-solutionlist-topic-from-main";
 
-    LocalDirectoryOutputConsumer localDirectoryOutputConsumer = new LocalDirectoryOutputConsumer("outputdirectory") ;
+    LocalDirectoryOutputConsumer localDirectoryOutputConsumer = new LocalDirectoryOutputConsumer("outputdirectory");
 
     KafkaBasedConsumer<AlgorithmObservedData> localDirectoryKafkaBasedConsumer =
-            new KafkaBasedConsumer<>(topicName, localDirectoryOutputConsumer, new AlgorithmObservedData()) ;
+        new KafkaBasedConsumer<>(topicName, localDirectoryOutputConsumer, new AlgorithmObservedData());
 
     localDirectoryKafkaBasedConsumer.start();
 

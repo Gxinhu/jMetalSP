@@ -1,7 +1,6 @@
 package org.uma.jmetalsp.problem.df;
 
 import org.uma.jmetal.solution.DoubleSolution;
-import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetalsp.observeddata.ObservedValue;
 import org.uma.jmetalsp.observer.Observable;
@@ -11,7 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DF2 extends DF implements Serializable {
+public class DF2 extends AbstractDF implements Serializable {
     public DF2(Observable<ObservedValue<Integer>> observable){
         this(10,2, observable);
     }
